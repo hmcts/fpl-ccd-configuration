@@ -5,7 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fpl.enums.ChildGender;
 import uk.gov.hmcts.reform.fpl.enums.EPOType;
@@ -92,13 +92,13 @@ class ManageOrdersAboutToSubmitControllerTest extends AbstractCallbackTest {
 
     private static final UUID ELEMENT_ID = UUID.randomUUID();
 
-    @MockBean
+    @MockitoBean
     private DocmosisDocumentGeneratorService docmosisGenerationService;
-    @MockBean
+    @MockitoBean
     private DocumentDownloadService downloadService;
-    @MockBean
+    @MockitoBean
     private UploadDocumentService uploadService;
-    @MockBean
+    @MockitoBean
     private IdentityService identityService;
 
     ManageOrdersAboutToSubmitControllerTest() {

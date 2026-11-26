@@ -7,8 +7,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeType;
@@ -64,13 +64,13 @@ import static uk.gov.hmcts.reform.fpl.utils.SecureDocumentManagementStoreLoader.
 class CaseSubmissionServiceTest {
     private static final byte[] PDF = TestDataHelper.DOCUMENT_CONTENT;
 
-    @MockBean
+    @MockitoBean
     private UploadDocumentService uploadDocumentService;
 
-    @MockBean
+    @MockitoBean
     private DocmosisDocumentGeneratorService documentGeneratorService;
 
-    @MockBean
+    @MockitoBean
     private CaseSubmissionGenerationService templateDataGenerationService;
 
     @Captor

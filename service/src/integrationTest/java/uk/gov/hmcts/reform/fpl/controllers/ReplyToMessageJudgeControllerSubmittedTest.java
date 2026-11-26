@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
@@ -40,13 +40,13 @@ class ReplyToMessageJudgeControllerSubmittedTest extends AbstractCallbackTest {
     private static final String REPLY = "Reply";
     private static final String LAST_NAME = "Davidson";
 
-    @MockBean
+    @MockitoBean
     private NotificationClient notificationClient;
 
-    @MockBean
+    @MockitoBean
     private CCDConcurrencyHelper concurrencyHelper;
 
-    @MockBean
+    @MockitoBean
     private FeatureToggleService featureToggleService;
 
     ReplyToMessageJudgeControllerSubmittedTest() {

@@ -8,9 +8,9 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fnp.exception.PaymentsApiException;
@@ -117,33 +117,33 @@ class UploadAdditionalApplicationsSubmittedControllerTest extends AbstractCallba
     private static final byte[] COVERSHEET_OTHER_REPRESENTATIVE_BINARY = testDocumentBinary();
     private static final DocumentReference ORDER = testDocumentReference();
 
-    @MockBean
+    @MockitoBean
     private DocumentConversionService documentConversionService;
-    @MockBean
+    @MockitoBean
     private NotificationClient notificationClient;
-    @MockBean
+    @MockitoBean
     private PaymentService paymentService;
-    @MockBean
+    @MockitoBean
     private FeeService feeService;
-    @MockBean
+    @MockitoBean
     private DocumentDownloadService documentDownloadService;
-    @MockBean
+    @MockitoBean
     private UploadDocumentService uploadDocumentService;
-    @MockBean
+    @MockitoBean
     private DocmosisCoverDocumentsService documentService;
     @Captor
     private ArgumentCaptor<Map<String, Object>> caseDetails;
-    @MockBean
+    @MockitoBean
     private SendLetterApi sendLetterApi;
-    @MockBean
+    @MockitoBean
     private CoreCaseDataService coreCaseDataService;
-    @MockBean
+    @MockitoBean
     private UploadAdditionalApplicationsService uploadAdditionalApplicationsService;
-    @MockBean
+    @MockitoBean
     private CafcassNotificationService cafcassNotificationService;
-    @MockBean
+    @MockitoBean
     private SendDocumentService sendDocumentService;
-    @MockBean
+    @MockitoBean
     private FeatureToggleService featureToggleService;
     @Captor
     private ArgumentCaptor<Function<CaseDetails, Map<String, Object>>> changeFunctionCaptor;

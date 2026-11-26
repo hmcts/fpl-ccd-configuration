@@ -4,11 +4,9 @@ import org.apache.commons.text.StringSubstitutor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.MockBeans;
-import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.boot.test.mock.mockito.SpyBeans;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.group.C110A;
@@ -42,10 +40,10 @@ import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readString;
     CaseSubmissionService.class, DocmosisDocumentGeneratorService.class, CaseSubmissionGenerationService.class,
     DocmosisHelper.class, FixedTimeConfiguration.class, CaseSubmissionDocumentAnnexGenerator.class
 })
-@SpyBeans(value = {@SpyBean(DocmosisDocumentGeneratorService.class)})
-@MockBeans(value = {
-    @MockBean(UploadDocumentService.class), @MockBean(CourtService.class), @MockBean(UserService.class),
-    @MockBean(Time.class)
+@MockitoSpyBean(types = {DocmosisDocumentGeneratorService.class})
+@MockitoBean(types = {
+    UploadDocumentService.class, CourtService.class, UserService.class,
+    Time.class
 })
 class CaseSubmissionServiceDocmosisTest extends AbstractDocmosisTest {
     private static final String LA_COURT = "La Court";

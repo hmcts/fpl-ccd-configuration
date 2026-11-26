@@ -2,8 +2,8 @@ package uk.gov.hmcts.reform.fpl.service.email.content;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.fpl.enums.C2AdditionalOrdersRequested;
 import uk.gov.hmcts.reform.fpl.enums.C2ApplicationType;
 import uk.gov.hmcts.reform.fpl.enums.SecureAccommodationType;
@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.fpl.model.notify.BaseCaseNotifyData;
 import uk.gov.hmcts.reform.fpl.model.notify.additionalapplicationsuploaded.AdditionalApplicationsUploadedTemplate;
 import uk.gov.hmcts.reform.fpl.service.calendar.CalendarService;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
-import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -51,11 +50,9 @@ class AdditionalApplicationsUploadedEmailContentProviderTest extends AbstractEma
     private static final String RESPONDENT_LAST_NAME = "Smith";
     private static final String CHILD_LAST_NAME = "Jones";
 
-    @MockBean
+    @MockitoBean
     private Time time;
-    @MockBean
-    private EmailNotificationHelper helper;
-    @MockBean
+    @MockitoBean
     private CalendarService calendarService;
 
     @Autowired
@@ -65,7 +62,7 @@ class AdditionalApplicationsUploadedEmailContentProviderTest extends AbstractEma
     void shouldReturnExpectedMapWithGivenCaseDetails() {
         CaseData caseData = buildCaseData();
 
-        when(helper.getEldestChildLastName(caseData.getAllChildren())).thenReturn(CHILD_LAST_NAME);
+        when(notificationHelper.getEldestChildLastName(caseData.getAllChildren())).thenReturn(CHILD_LAST_NAME);
         when(time.now()).thenReturn(FUTURE_HEARING_DATE.minusDays(1));
 
         AdditionalApplicationsUploadedTemplate expectedParameters = AdditionalApplicationsUploadedTemplate.builder()
@@ -103,7 +100,7 @@ class AdditionalApplicationsUploadedEmailContentProviderTest extends AbstractEma
 
         when(calendarService.getWorkingDayFrom(LocalDate.now(), WITHIN_2_DAYS.getCount()))
                 .thenReturn(LocalDate.now().plusDays(WITHIN_2_DAYS.getCount()));
-        when(helper.getEldestChildLastName(caseData.getAllChildren())).thenReturn(CHILD_LAST_NAME);
+        when(notificationHelper.getEldestChildLastName(caseData.getAllChildren())).thenReturn(CHILD_LAST_NAME);
         when(time.now()).thenReturn(FUTURE_HEARING_DATE.minusDays(1));
 
         AdditionalApplicationsUploadedTemplate expectedParameters = AdditionalApplicationsUploadedTemplate.builder()
@@ -136,7 +133,7 @@ class AdditionalApplicationsUploadedEmailContentProviderTest extends AbstractEma
                 .build();
 
         when(calendarService.isWorkingDay(LocalDate.now())).thenReturn(true);
-        when(helper.getEldestChildLastName(caseData.getAllChildren())).thenReturn(CHILD_LAST_NAME);
+        when(notificationHelper.getEldestChildLastName(caseData.getAllChildren())).thenReturn(CHILD_LAST_NAME);
         when(time.now()).thenReturn(FUTURE_HEARING_DATE.minusDays(1));
 
         AdditionalApplicationsUploadedTemplate expectedParameters = AdditionalApplicationsUploadedTemplate.builder()
@@ -172,7 +169,7 @@ class AdditionalApplicationsUploadedEmailContentProviderTest extends AbstractEma
         when(calendarService.isWorkingDay(LocalDate.now())).thenReturn(false);
         when(calendarService.getWorkingDayFrom(LocalDate.now(), 1))
                 .thenReturn(nextDay);
-        when(helper.getEldestChildLastName(caseData.getAllChildren())).thenReturn(CHILD_LAST_NAME);
+        when(notificationHelper.getEldestChildLastName(caseData.getAllChildren())).thenReturn(CHILD_LAST_NAME);
         when(time.now()).thenReturn(FUTURE_HEARING_DATE.minusDays(1));
 
         AdditionalApplicationsUploadedTemplate expectedParameters = AdditionalApplicationsUploadedTemplate.builder()
@@ -203,7 +200,7 @@ class AdditionalApplicationsUploadedEmailContentProviderTest extends AbstractEma
                 .build()))
             .build();
 
-        when(helper.getEldestChildLastName(caseData.getAllChildren())).thenReturn(CHILD_LAST_NAME);
+        when(notificationHelper.getEldestChildLastName(caseData.getAllChildren())).thenReturn(CHILD_LAST_NAME);
         when(time.now()).thenReturn(FUTURE_HEARING_DATE.minusDays(1));
 
         AdditionalApplicationsUploadedTemplate expectedParameters =
@@ -236,7 +233,7 @@ class AdditionalApplicationsUploadedEmailContentProviderTest extends AbstractEma
             .build();
         given(calendarService.getWorkingDayFrom(LocalDate.now(), WITHIN_5_DAYS.getCount()))
                 .willReturn(LocalDate.now().plusDays(WITHIN_5_DAYS.getCount()));
-        when(helper.getEldestChildLastName(caseData.getAllChildren())).thenReturn(CHILD_LAST_NAME);
+        when(notificationHelper.getEldestChildLastName(caseData.getAllChildren())).thenReturn(CHILD_LAST_NAME);
         when(time.now()).thenReturn(FUTURE_HEARING_DATE.minusDays(1));
 
         AdditionalApplicationsUploadedTemplate expectedParameters =

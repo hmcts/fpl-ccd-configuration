@@ -6,7 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.document.am.model.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -26,7 +26,7 @@ class SecureDocStoreHelperTest {
 
     @TestLogs
     private TestLogger logs = new TestLogger(SecureDocStoreHelper.class);
-    @MockBean
+    @MockitoBean
     private FeatureToggleService featureToggleService;
     @Mock
     private SecureDocStoreService secureDocStoreService;

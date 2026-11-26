@@ -10,8 +10,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fnp.client.FeesRegisterApi;
 import uk.gov.hmcts.reform.fnp.exception.FeeRegisterException;
@@ -66,7 +66,7 @@ import static uk.gov.hmcts.reform.fpl.testbeans.TestFeeConfig.SUPERVISION_ORDER_
 @ContextConfiguration(classes = {FeeService.class, TestFeeConfig.class})
 class FeeServiceTest {
 
-    @MockBean
+    @MockitoBean
     private FeesRegisterApi feesRegisterApi;
 
     @Autowired

@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.service.email.content;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HighCourtAdminEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.hearing.HearingUrgencyType;
@@ -19,12 +18,12 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseHmctsTemplate;
 import uk.gov.hmcts.reform.fpl.service.CourtService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
-import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -39,22 +38,20 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 class HmctsEmailContentProviderTest extends AbstractEmailContentProviderTest {
 
     private static final byte[] APPLICATION_BINARY = TestDataHelper.DOCUMENT_CONTENT;
-    private static final String BINARY_URL = "/documents/applicationBinaryUrl";
+    private static final String BINARY_URL = "/documentsv2/applicationBinaryUrl";
     private static final DocumentReference C110A = mock(DocumentReference.class);
     private static final String CHILD_LAST_NAME = "Holmes";
 
     @Autowired
     private HmctsEmailContentProvider underTest;
 
-    @MockBean
-    private EmailNotificationHelper helper;
-
     @BeforeEach
     void init() {
         when(C110A.getBinaryUrl()).thenReturn(BINARY_URL);
         when(documentDownloadService.downloadDocument(BINARY_URL)).thenReturn(APPLICATION_BINARY);
 
-        when(helper.getEldestChildLastName(anyList())).thenReturn(CHILD_LAST_NAME);
+        when(notificationHelper.getEldestChildLastName(anyList())).thenReturn(CHILD_LAST_NAME);
+        when(courtService.getCourtName(any())).thenReturn(COURT_NAME);
     }
 
     @Test

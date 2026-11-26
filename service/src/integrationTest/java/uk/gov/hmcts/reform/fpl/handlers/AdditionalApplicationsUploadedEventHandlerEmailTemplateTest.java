@@ -3,9 +3,8 @@ package uk.gov.hmcts.reform.fpl.handlers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.fpl.enums.HearingType;
 import uk.gov.hmcts.reform.fpl.events.AdditionalApplicationsUploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -56,10 +55,10 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
     AdditionalApplicationsUploadedEmailContentProvider.class, CaseUrlService.class,
     RepresentativeNotificationService.class
 })
-@MockBeans({
-    @MockBean(RequestData.class), @MockBean(SendDocumentService.class), @MockBean(OthersService.class),
-    @MockBean(OtherRecipientsInbox.class), @MockBean(Time.class), @MockBean(CafcassNotificationService.class),
-    @MockBean(UserService.class), @MockBean(ApplicantLocalAuthorityService.class)
+@MockitoBean(types = {
+    RequestData.class, SendDocumentService.class, OthersService.class,
+    OtherRecipientsInbox.class, Time.class, CafcassNotificationService.class,
+    UserService.class, ApplicantLocalAuthorityService.class
 })
 class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends EmailTemplateTest {
     private static final long CASE_ID = 12345L;
@@ -103,7 +102,7 @@ class AdditionalApplicationsUploadedEventHandlerEmailTemplateTest extends EmailT
     @Autowired
     private Time time;
 
-    @MockBean
+    @MockitoBean
     private CalendarService calendarService;
 
     @BeforeEach

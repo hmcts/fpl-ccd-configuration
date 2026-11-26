@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.HearingStatus;
 import uk.gov.hmcts.reform.fpl.events.SendNoticeOfHearingVacated;
@@ -29,7 +29,7 @@ class ManageHearingsControllerVacatedSubmittedTest extends ManageHearingsControl
     private static final LocalDate VACATED_DATE = LocalDate.of(2024, 1, 1);
     private static final LocalDateTime HEARING_START_DATE = LocalDateTime.of(2050, 5, 20, 13, 0);
 
-    @MockBean
+    @MockitoBean
     private EventService eventPublisher;
 
     @Captor

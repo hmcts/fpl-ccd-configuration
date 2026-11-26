@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.enums.CaseRole;
 import uk.gov.hmcts.reform.fpl.enums.SolicitorRole;
@@ -56,7 +56,7 @@ public class ColleaguesToNotifyControllerAboutToStartTest extends AbstractCallba
         .solicitor(SOLICITOR_WITH_COLLEAGUES)
         .build();
 
-    @MockBean
+    @MockitoBean
     private CaseRoleLookupService caseRoleLookupService;
 
     protected ColleaguesToNotifyControllerAboutToStartTest() {

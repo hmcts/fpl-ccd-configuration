@@ -5,7 +5,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.fpl.enums.State;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.JudicialService;
@@ -20,7 +20,7 @@ import static uk.gov.hmcts.reform.fpl.enums.State.CLOSED;
 @OverrideAutoConfiguration(enabled = true)
 public class RecordFinalDecisionsControllerSubmittedTest extends AbstractCallbackTest {
 
-    @MockBean
+    @MockitoBean
     private JudicialService judicialService;
 
     RecordFinalDecisionsControllerSubmittedTest() {

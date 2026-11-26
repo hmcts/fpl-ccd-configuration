@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -37,22 +37,22 @@ import static uk.gov.hmcts.reform.fpl.utils.TestDataHelper.DOCUMENT_CONTENT;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {C2UploadedEventHandler.class})
 class C2UploadedEventHandlerTest {
-    @MockBean
+    @MockitoBean
     private IdamClient idamClient;
 
-    @MockBean
+    @MockitoBean
     private RequestData requestData;
 
-    @MockBean
+    @MockitoBean
     private NotificationService notificationService;
 
-    @MockBean
+    @MockitoBean
     private LocalAuthorityRecipientsService localAuthorityRecipients;
 
-    @MockBean
+    @MockitoBean
     private C2UploadedEmailContentProvider c2UploadedEmailContentProvider;
 
-    @MockBean
+    @MockitoBean
     private CourtService courtService;
 
     @Autowired

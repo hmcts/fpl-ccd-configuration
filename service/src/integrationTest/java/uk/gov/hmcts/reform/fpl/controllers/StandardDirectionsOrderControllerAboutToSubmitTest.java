@@ -4,7 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import uk.gov.hmcts.reform.calendar.client.BankHolidaysApi;
 import uk.gov.hmcts.reform.calendar.model.BankHolidays;
 import uk.gov.hmcts.reform.calendar.model.BankHolidays.Division;
@@ -81,16 +81,16 @@ class StandardDirectionsOrderControllerAboutToSubmitTest extends AbstractCallbac
     private static final String DIRECTION_TEXT = "Contact the parents to make sure there is a complete family tree "
         + "showing family members who could be alternative carers.";
 
-    @MockBean
+    @MockitoBean
     private DocmosisDocumentGeneratorService docmosisService;
 
-    @MockBean
+    @MockitoBean
     private BankHolidaysApi bankHolidaysApi;
 
-    @MockBean
+    @MockitoBean
     private UploadDocumentService uploadDocumentService;
 
-    @MockBean
+    @MockitoBean
     private DocumentSealingService sealingService;
 
     StandardDirectionsOrderControllerAboutToSubmitTest() {

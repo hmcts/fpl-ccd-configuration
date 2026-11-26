@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.service.email.content;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.hearing.HearingUrgencyType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -18,7 +17,6 @@ import uk.gov.hmcts.reform.fpl.model.cafcass.NewApplicationCafcassData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.notify.submittedcase.SubmitCaseCafcassTemplate;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
-import uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper;
 import uk.gov.hmcts.reform.fpl.utils.TestDataHelper;
 
 import java.util.Base64;
@@ -49,15 +47,12 @@ class CafcassEmailContentProviderTest extends AbstractEmailContentProviderTest {
     @Autowired
     private CafcassEmailContentProvider underTest;
 
-    @MockBean
-    private EmailNotificationHelper helper;
-
     @BeforeEach
     void init() {
         when(C110A.getBinaryUrl()).thenReturn(BINARY_URL);
         when(documentDownloadService.downloadDocument(BINARY_URL)).thenReturn(APPLICATION_BINARY);
 
-        when(helper.getEldestChildLastName(anyList())).thenReturn(CHILD_LAST_NAME);
+        when(notificationHelper.getEldestChildLastName(anyList())).thenReturn(CHILD_LAST_NAME);
     }
 
     @Test
