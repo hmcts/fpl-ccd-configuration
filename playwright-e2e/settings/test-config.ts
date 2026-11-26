@@ -2,7 +2,7 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
 export const testConfig = {
-  waEnabled: process.env.WA_ENABLED === 'true' || false,
+  waEnabled: process.env.ENABLE_WA === 'true' || false,
     idamClientSecret: process.env.IDAM_CLIENT_SECRET || '',
     IDAM_RETRY_ATTEMPTS:3,
    IDAM_RETRY_BASE_MS:300,
