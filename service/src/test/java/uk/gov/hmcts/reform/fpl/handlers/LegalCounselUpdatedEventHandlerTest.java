@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.events.legalcounsel.LegalCounsellorRemoved;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.LegalCounsellor;
+import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentSolicitor;
 import uk.gov.hmcts.reform.fpl.model.notify.legalcounsel.LegalCounsellorAddedNotifyTemplate;
@@ -28,8 +29,7 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.LEGAL_COUNSELLOR_REMOVED_T
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.LEGAL_COUNSELLOR_SELF_REMOVED_EMAIL_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.BARRISTER;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
-import uk.gov.hmcts.reform.fpl.model.LocalAuthority;
-import static org.mockito.Mockito.never;
+
 
 @ExtendWith(MockitoExtension.class)
 class LegalCounselUpdatedEventHandlerTest {
@@ -98,29 +98,6 @@ class LegalCounselUpdatedEventHandlerTest {
         verify(notificationService).sendEmail(
             LEGAL_COUNSELLOR_REMOVED_EMAIL_TEMPLATE, TEST_COUNSELLOR_EMAIL_ADDRESS,
             expectedTemplate, TEST_CASE_ID
-        );
-    }
-
-    @Test
-    void shouldRevokeRespondentCounselAccessWhenLocalAuthoritiesIsNull() {
-        CaseData caseDataWithoutLocalAuthorities = CaseData.builder()
-            .id(TEST_CASE_ID)
-            .build();
-
-        LegalCounsellorRemoved event = new LegalCounsellorRemoved(
-            caseDataWithoutLocalAuthorities,
-            "Test Solicitors",
-            TEST_LEGAL_COUNCILLOR
-        );
-
-        when(userService.getUserEmail()).thenReturn("solicitor@test.com");
-
-        underTest.handleLegalCounsellorRemovedEvent(event);
-
-        verify(caseAccessService).revokeCaseRoleFromUser(
-            TEST_CASE_ID,
-            TEST_COUNCILLOR_USER_ID,
-            BARRISTER
         );
     }
 
@@ -262,37 +239,17 @@ class LegalCounselUpdatedEventHandlerTest {
     }
 
     @Test
-    void shouldNotRevokeAccessWhenCounselIsStillAssignedToApplicant() {
-        LocalAuthority applicant = LocalAuthority.builder()
-            .legalCounsellors(wrapElements(TEST_LEGAL_COUNCILLOR))
-            .build();
-
-        caseData = caseData.toBuilder()
-            .localAuthorities(wrapElements(applicant))
-            .build();
-
-        LegalCounsellorRemoved event = new LegalCounsellorRemoved(
-            caseData,
-            "Test Solicitors",
-            TEST_LEGAL_COUNCILLOR
-        );
-
-        when(userService.getUserEmail()).thenReturn("solicitor@test.com");
-
-        underTest.handleLegalCounsellorRemovedEvent(event);
-
-        verify(caseAccessService, never())
-            .revokeCaseRoleFromUser(TEST_CASE_ID, TEST_COUNCILLOR_USER_ID, BARRISTER);
-    }
-
-    @Test
-    void shouldNotRevokeAccessWhenApplicantCounselStillRepresentsRespondent() {
+    void shouldRevokeAccessEvenWhenApplicantCounselStillRepresentsRespondent() {
         CaseData previousCaseData = CaseData.builder()
             .id(TEST_CASE_ID)
             .localAuthorities(wrapElements(
                 LocalAuthority.builder()
                     .name("Previous Local Authority")
                     .designated("Yes")
+                    .legalCounsellors(wrapElements(TEST_LEGAL_COUNCILLOR))
+                    .build()))
+            .respondents1(wrapElements(
+                Respondent.builder()
                     .legalCounsellors(wrapElements(TEST_LEGAL_COUNCILLOR))
                     .build()))
             .build();
@@ -321,8 +278,9 @@ class LegalCounselUpdatedEventHandlerTest {
 
         underTest.handleLegalCounsellorRemovedEvent(event);
 
-        verify(caseAccessService, never())
-            .revokeCaseRoleFromUser(TEST_CASE_ID, TEST_COUNCILLOR_USER_ID, BARRISTER);
+        verify(caseAccessService)
+            .revokeCaseRoleFromUser(
+                TEST_CASE_ID, TEST_COUNCILLOR_USER_ID, BARRISTER);
     }
 
     @Test
