@@ -12,6 +12,7 @@ import caseWithChildrenCafcassSolicitorDemo
 import caseWithChildrenCafcassSolicitor
     from '../caseData/caseWithMultipleChildCafcassSolicitor.json' with {type: "json"};
 import caseWtihQuery from '../caseData/caseWithQuery.json' with {type: "json"};
+import {testConfig} from "../settings/test-config";
 
 test.describe('Query management', () => {
     const dateTime = new Date().toISOString();
@@ -72,7 +73,7 @@ test.describe('Query management', () => {
                 await expect(page.getByRole('cell', {name: `${queryManagement.getCurrentDate()}`})).toBeVisible();
 
                 await queryManagement.tabNavigation('Case File View');
-                await caseFileView.openFolder('Uncategorised documents');
+                await caseFileView.clickFolder('Uncategorised documents');
                 await expect(caseFileView.page.getByText('testWordDoc.docx')).toBeVisible();
             });
             await test.step('Assert Query details are not visible under query tab to respondent solicitor', async () => {

@@ -46,7 +46,7 @@ test.describe('Gatekeeping Listing', () => {
         await expect.soft(gateKeepingListing.page.getByText('Recorder Fry JP',{exact:true})).toHaveCount(2);
         //Check CFV
       await caseFileView.goToCFVTab();
-      await caseFileView.openFolder('Orders');
+      await caseFileView.clickFolder('Orders');
       await expect(page.getByRole('tree')).toContainText('testWordDoc.pdf');
       await gateKeepingListing.clickSignOut();
 

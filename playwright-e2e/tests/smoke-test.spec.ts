@@ -210,8 +210,8 @@ test.setTimeout(7 * 60 * 1000);
 
         await test.step('CFV Application check', async () => {
             await caseFileView.goToCFVTab();
-            await caseFileView.openFolder('Applications');
-            await caseFileView.openFolder('Original Applications');
+            await caseFileView.clickFolder('Applications');
+            await caseFileView.clickFolder('Original Applications');
             await expect(caseFileView.page.getByLabel('Original Applications folder')).toBeVisible();
             await expect(caseFileView.page.getByRole('button', { name: 'Somuy__Swansea_City_Council_Asa_Yaks.pdf', exact: true })).toBeVisible();
 

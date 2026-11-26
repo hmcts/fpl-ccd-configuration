@@ -13,14 +13,14 @@ export class CaseFileView extends BasePage {
         await this.tabNavigation('Case File View');
     }
 
-    async openFolder(name: string) {
+    async clickFolder(name: string) {
         const folderButton = this.page.locator(`button[aria-label^="${name} folder"]`).filter({ has: this.page.locator(':visible') }).first();
         await folderButton.waitFor({ state: 'visible' });
         await folderButton.click();
     }
     async moveDocument(fromFolder: string,toFolder:string ) {
 
-        await this.openFolder(fromFolder);
+        await this.clickFolder(fromFolder);
 
         await this.page.getByRole('button', { name: 'More document options', exact: true }).click();
         await this.page.getByText('Change folder').click();

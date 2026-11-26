@@ -83,7 +83,7 @@ test.describe('Approve Orders @test', () => {
 
       //Check CFV
       await caseFileView.goToCFVTab();
-      await caseFileView.openFolder('Orders');
+      await caseFileView.clickFolder('Orders');
       await expect(page.getByRole('tree')).toContainText('draftOrder.pdf');
 
       if (testConfig.waEnabled) {

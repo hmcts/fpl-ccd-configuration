@@ -16,7 +16,7 @@ export class ReviewAdditionalApplication extends BasePage {
     private whatTheDecision: Locator;
     private isOrderUrgent: Locator;
     private closeConfirmationInformation: Locator;
-    draftOrderPage: any;
+    previewOrderPage: any;
 
     public constructor(page: Page) {
         super(page);
@@ -74,12 +74,12 @@ export class ReviewAdditionalApplication extends BasePage {
         await this.refusalReason.fill(reason);
     }
 
-    async openDraftOrder(docName: string) {
+    async openOrderPreview(docName: string) {
 
         const newPagePromise = this.page.context().waitForEvent('page');
         await this.page.getByRole('button', {name: `${docName}`}).click();
-        this.draftOrderPage = await newPagePromise;
-        await this.draftOrderPage.waitForLoadState();
+        this.previewOrderPage = await newPagePromise;
+        await this.previewOrderPage.waitForLoadState();
     }
 
 }

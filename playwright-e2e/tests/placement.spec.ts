@@ -30,11 +30,11 @@ test.describe('Placement', () => {
 
       //Check CFV
       await caseFileView.goToCFVTab();
-      await caseFileView.openFolder('Placement applications and responses');
+      await caseFileView.clickFolder('Placement applications and responses');
       await expect(page.getByRole('tree')).toContainText('testPdf.pdf');
       await expect(page.getByRole('tree')).toContainText('testPdf2.pdf');
       await expect(page.getByRole('tree')).toContainText('testPdf3.pdf');
-      await caseFileView.openFolder('Confidential');
+      await caseFileView.clickFolder('Confidential');
       await expect(page.getByRole('tree')).toContainText('testPdf4.pdf');
       await placement.clickSignOut();
 
