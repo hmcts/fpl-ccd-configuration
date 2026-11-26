@@ -14,7 +14,7 @@ export default defineConfig({
 
     testDir: "./playwright-e2e",
     testMatch: '*spec.ts',
-    testIgnore: '*api.spec.ts',
+    testIgnore: ['*api.spec.ts','all-work-my-work.spec.ts'],
     /* Run tests in files in parallel */
     fullyParallel: true,
     timeout: 5 * 60 * 1000, //each test execution time is set to 5 min
@@ -54,6 +54,13 @@ export default defineConfig({
             ...ProjectsConfig.edge,
             dependencies: ['GlobalSetup'],
             teardown: process.env.CI ? 'AMRoleCleanup' : undefined,
+        },
+        {
+            // final step, edge-only execution for this one file
+            name: "RunAllWorkMyWork",
+            testIgnore: [],
+            testMatch: "/tests/all-work-my-work.spec.ts",
+            dependencies: ["edge","preview"], // runs after edge project and preview project
         },
         {
             ...ProjectsConfig.chrome,

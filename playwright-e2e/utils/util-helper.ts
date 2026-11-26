@@ -1,3 +1,5 @@
+import {TableUtils} from "@hmcts/playwright-common";
+import {Locator, Page} from "@playwright/test";
 
 export const getCurrentdate = async ()  => {
     let date = new Date();
@@ -42,3 +44,12 @@ export function getLocalLongDate(date: Date): string {
 
     return `${day} ${month} ${year} `;
 }
+
+export function parseWorkAllocationTable(tableSelector: Locator): void {
+    const tableUtils = new TableUtils();
+    const WAmap = tableUtils.parseWorkAllocationTable(tableSelector);
+    console.log(WAmap);
+
+}
+
+
