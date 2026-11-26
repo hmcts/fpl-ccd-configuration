@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.validation.groups.SealedSDOGroup;
-import uk.gov.hmcts.reform.fpl.validation.interfaces.HasGender;
 
 import java.time.LocalDate;
 
@@ -26,7 +25,6 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@HasGender(groups = {Default.class, SealedSDOGroup.class})
 @SuppressWarnings({"java:S1133","java:S1874"})
 public final class ChildParty extends Party {
     private final ChildGender gender;
