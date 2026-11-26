@@ -14,6 +14,7 @@ import static java.util.Collections.emptySet;
 import static java.util.stream.Collectors.flatMapping;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toSet;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.Type.RESPONDENT;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 
 @Service
@@ -46,8 +47,16 @@ public class RepresentativeCaseRoleService {
             .collect(groupingBy(
                 Representative::getEmail,
                 () -> new TreeMap<>(String.CASE_INSENSITIVE_ORDER),
-                flatMapping(representative -> representative.getRole().getCaseRoles().stream(), toSet())
+                flatMapping(representative -> caseRolesFor(representative).stream(), toSet())
             ));
+    }
+
+    private static Set<CaseRole> caseRolesFor(Representative representative) {
+        if (representative.getRole().getType() == RESPONDENT) {
+            return Set.of(CaseRole.getByIndex("SOLICITOR", representative.getRole().getSequenceNo()));
+        }
+
+        return representative.getRole().getCaseRoles();
     }
 
 }

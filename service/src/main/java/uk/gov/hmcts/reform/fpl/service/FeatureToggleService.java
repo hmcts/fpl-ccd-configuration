@@ -143,6 +143,10 @@ public class FeatureToggleService {
         return isNotEmpty(featureFlag) && featureFlag.isEnableApi();
     }
 
+    public boolean isCaseFlagsV2Enabled() {
+        return ldClient.boolVariation("case-flags-v2-enabled", createLDContext(), false);
+    }
+
     private LDContext createLDContext() {
         return createLDContext(Map.of());
     }

@@ -456,8 +456,10 @@ test {
 }
 
 integration {
-  maxHeapSize = "1024m"
-  maxParallelForks = 4
+  maxHeapSize = "1536m"
+  maxParallelForks = 2
+  forkEvery = 40
+  systemProperty 'spring.test.context.cache.maxSize', '8'
   useJUnitPlatform()
   jvmArgs '--add-opens=java.base/java.lang=ALL-UNNAMED'
 }
@@ -524,7 +526,9 @@ bootWithCCD {
       }
     }
 
-    environment "spring.profiles.active", "feature-toggle,local,user-mappings"
+    def localProfiles = "feature-toggle,local,user-mappings"
+    environment "spring.profiles.active", localProfiles
+    environment "SPRING_PROFILES_ACTIVE", localProfiles
     environment 'rse.lib.stub.s2s', 'true'
     environment 'DOCUMENT_MANAGEMENT_URL', 'http://dm-store-aat.service.core-compute-aat.internal'
     environment 'SEND_LETTER_URL', 'http://dm-store-aat.service.core-compute-aat.internal'

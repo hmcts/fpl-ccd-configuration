@@ -46,7 +46,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "RoleName": "idam:caseworker-publiclaw-solicitor",
     "ReadOnly": "N",
-    "AccessProfiles": "caseworker-publiclaw-solicitor"
+    "AccessProfiles": "caseworker-publiclaw-solicitor,caseworker-publiclaw-support"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -340,28 +340,28 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "RoleName": "specific-access-admin",
     "ReadOnly": "N",
-    "AccessProfiles": "caseworker-publiclaw-courtadmin,hearing-centre-admin"
+    "AccessProfiles": "caseworker-publiclaw-courtadmin,hearing-centre-admin,caseworker-publiclaw-caseflags"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "RoleName": "challenged-access-admin",
     "ReadOnly": "N",
-    "AccessProfiles": "caseworker-publiclaw-courtadmin,hearing-centre-admin"
+    "AccessProfiles": "caseworker-publiclaw-courtadmin,hearing-centre-admin,caseworker-publiclaw-caseflags"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "RoleName": "specific-access-ctsc",
     "ReadOnly": "N",
-    "AccessProfiles": "caseworker-publiclaw-courtadmin,ctsc"
+    "AccessProfiles": "caseworker-publiclaw-courtadmin,ctsc,caseworker-publiclaw-caseflags"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "RoleName": "challenged-access-ctsc",
     "ReadOnly": "N",
-    "AccessProfiles": "caseworker-publiclaw-courtadmin,ctsc"
+    "AccessProfiles": "caseworker-publiclaw-courtadmin,ctsc,caseworker-publiclaw-caseflags"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -382,14 +382,14 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "RoleName": "ctsc",
     "ReadOnly": "N",
-    "AccessProfiles": "caseworker-publiclaw-courtadmin,caseworker-publiclaw-bulkscan,ctsc"
+    "AccessProfiles": "caseworker-publiclaw-courtadmin,caseworker-publiclaw-bulkscan,ctsc,caseworker-publiclaw-caseflags"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "RoleName": "ctsc-team-leader",
     "ReadOnly": "N",
-    "AccessProfiles": "caseworker-publiclaw-superuser,caseworker-publiclaw-courtadmin,caseworker-publiclaw-bulkscan,TTL_profile"
+    "AccessProfiles": "caseworker-publiclaw-superuser,caseworker-publiclaw-courtadmin,caseworker-publiclaw-bulkscan,TTL_profile,caseworker-publiclaw-caseflags,caseworker-publiclaw-support"
 
   },
   {
@@ -397,14 +397,14 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "RoleName": "hearing-centre-admin",
     "ReadOnly": "N",
-    "AccessProfiles": "caseworker-publiclaw-courtadmin,hearing-centre-admin"
+    "AccessProfiles": "caseworker-publiclaw-courtadmin,hearing-centre-admin,caseworker-publiclaw-caseflags"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "RoleName": "hearing-centre-team-leader",
     "ReadOnly": "N",
-    "AccessProfiles": "caseworker-publiclaw-courtadmin,hearing-centre-admin"
+    "AccessProfiles": "caseworker-publiclaw-courtadmin,hearing-centre-admin,caseworker-publiclaw-caseflags"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -474,7 +474,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "RoleName": "idam:caseworker-publiclaw-judiciary",
     "ReadOnly": "N",
-    "AccessProfiles": "caseworker-publiclaw-judiciary"
+    "AccessProfiles": "caseworker-publiclaw-judiciary,caseworker-publiclaw-caseflags"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -489,5 +489,12 @@
     "RoleName": "idam:cft-ttl-manager",
     "ReadOnly": "N",
     "AccessProfiles": "TTL_profile"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "RoleName": "caseworker-publiclaw-gatekeeper",
+    "ReadOnly": "N",
+    "AccessProfiles": "caseworker-publiclaw-gatekeeper,caseworker-publiclaw-caseflags"
   }
 ]

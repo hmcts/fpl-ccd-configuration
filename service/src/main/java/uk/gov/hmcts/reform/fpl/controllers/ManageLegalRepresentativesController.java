@@ -14,7 +14,9 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.LegalRepresentative;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.LegalRepresentativeService;
+import uk.gov.hmcts.reform.fpl.service.FeatureToggleService;
 import uk.gov.hmcts.reform.fpl.service.ValidateEmailService;
+import uk.gov.hmcts.reform.fpl.service.caseflag.CaseFlagsService;
 import uk.gov.hmcts.reform.fpl.service.validators.ManageLegalRepresentativesValidator;
 
 import java.util.List;
@@ -29,6 +31,8 @@ public class ManageLegalRepresentativesController extends CallbackController {
     private final LegalRepresentativeService legalRepresentativeService;
     private final ManageLegalRepresentativesValidator manageLegalRepresentativesValidator;
     private final ValidateEmailService validateEmailService;
+    private final CaseFlagsService caseFlagsService;
+    private final FeatureToggleService featureToggleService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -37,6 +41,9 @@ public class ManageLegalRepresentativesController extends CallbackController {
 
         caseDetails.getData()
             .put("legalRepresentatives", legalRepresentativeService.getDefaultLegalRepresentatives(caseData));
+        if (featureToggleService.isCaseFlagsV2Enabled()) {
+            setupApplicantRepresentativeCaseFlags(caseDetails);
+        }
 
         return respond(callbackRequest.getCaseDetails());
     }
@@ -59,9 +66,15 @@ public class ManageLegalRepresentativesController extends CallbackController {
         errors.addAll(emailNotRegisteredErrors);
 
         if (!errors.isEmpty()) {
+            if (featureToggleService.isCaseFlagsV2Enabled()) {
+                setupApplicantRepresentativeCaseFlags(caseDetails);
+            }
             return respond(caseDetails, errors);
         }
 
+        if (featureToggleService.isCaseFlagsV2Enabled()) {
+            setupApplicantRepresentativeCaseFlags(caseDetails);
+        }
         return respond(caseDetails);
     }
 
@@ -76,6 +89,10 @@ public class ManageLegalRepresentativesController extends CallbackController {
             unwrapElements(originalCaseData.getLegalRepresentatives()),
             unwrapElements(updatedCaseData.getLegalRepresentatives())
         );
+        if (featureToggleService.isCaseFlagsV2Enabled()) {
+            caseFlagsService.removeObsoleteApplicantRepresentativeFlags(updatedCaseData, originalCaseData);
+            setupApplicantRepresentativeCaseFlags(updatedCaseDetails);
+        }
         return respond(updatedCaseDetails);
     }
 
@@ -85,6 +102,17 @@ public class ManageLegalRepresentativesController extends CallbackController {
             getCaseData(callbackRequest),
             getCaseDataBefore(callbackRequest))
         );
+    }
+
+    private void setupApplicantRepresentativeCaseFlags(CaseDetails caseDetails) {
+        CaseData caseData = getCaseData(caseDetails);
+
+        if (caseFlagsService.caseFlagsSetupRequired(caseData)) {
+            caseFlagsService.setupCaseFlags(caseData);
+            caseFlagsService.processNewlySetCaseFlags(caseData);
+        }
+
+        caseDetails.getData().putAll(caseFlagsService.generate(caseData));
     }
 
 }
