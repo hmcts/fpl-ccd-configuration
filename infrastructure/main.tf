@@ -127,7 +127,7 @@ module "fpl-scheduler-postgres-v15-flexible-server" {
     }
   ]
 
-  pgsql_version = "15"
+  pgsql_version = "17"
 
   pgsql_server_configuration = [
     {
